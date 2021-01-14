@@ -1,0 +1,10 @@
+archive_type='nelder_mead_learner'
+num_params=3
+min_boundary=array([ 0.18800876, -0.49290757, -0.18919753])
+max_boundary=array([1., 1., 1.])
+start_datetime='2020-09-11_14-00'
+param_names=['', '', '']
+initial_simplex_corner=array([ 0.18800876, -0.49290757, -0.18919753])
+initial_simplex_displacements=array([0.8, 0.8, 0.8])
+simplex_parameters=array([[ 0.32782357, -0.12222856, -0.0037037 ],       [ 0.32689765,  0.09783317,  0.0904321 ],       [ 0.18800876,  0.30709243, -0.18919753],       [ 0.25467542, -0.33735201,  0.2330247 ]])
+simplex_costs=array([0.12242183, 0.12461137, 0.16544876, 0.23296646])
