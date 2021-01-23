@@ -74,7 +74,7 @@ show_img('probe', probe)
 plt.subplot(312)
 show_img('atom', atom)
 plt.subplot(313)
-show_img('OD', OD, h_scale=0.5)
+show_img('OD', OD, h_scale=1.5)
 try:
     # if int_OD>0.02:
     fp = fitgaussian2d(OD, [234,290])

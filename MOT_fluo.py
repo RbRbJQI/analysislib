@@ -18,10 +18,10 @@ def probe_mask( point, center, radius ):
         return 1
 
 def get_images():
-    fluo = run.get_image(orientation='YZ', label = 'fluo_img', image='fluo_img')
+    fluo = run.get_image(orientation='XZ', label = 'fluo_img', image='fluo_img')
     orig_fluo = np.copy(fluo)
     try:
-        bg = run.get_image(orientation='YZ', label = 'fluo_img', image='bg')
+        bg = run.get_image(orientation='XZ', label = 'fluo_img', image='bg')
         fluo = fluo.astype(float)
         bg = bg.astype(float)
         fluo = np.copy(fluo - bg)
@@ -60,27 +60,27 @@ plt.figure('fluo_img')
 fig, (ax1, ax2)=plt.subplots(1,2)
 # plt.subplot(122)
 orig_fluo_name=ax2.imshow(orig_fluo)
-orig_fluo_name.set_clim(0,np.max(orig_fluo))
+orig_fluo_name.set_clim(0, np.max(orig_fluo))
 plt.colorbar(orig_fluo_name,ax=ax2)
 # plt.colorbar()
-roi_start=(100,120)#(150,145)
+roi_start=(100,80)#(100,120)
 w,h=330,330
 
 
 # plt.subplot(121)
 # Create a Rectangle patch
 rect = patches.Rectangle(roi_start,w,h,linewidth=3,edgecolor='r',facecolor='none')
-circle = patches.Circle((245,273),138, fill=None, edgecolor='r')
+circle = patches.Circle((289.3,296.5),138, fill=None, edgecolor='r')
 # Add the patch to the Axes
 ax1.add_patch(rect)
 fluo_img_name=ax1.imshow(fluo_img)
-fluo_img_name.set_clim(0, 1800)
+fluo_img_name.set_clim(0, np.max(orig_fluo))
 ax2.add_patch(circle)
 
 plt.colorbar(fluo_img_name,ax=ax1)
 # show_img('fluo_img', fluo_img, h_scale=500)
 roi_fluo_img = np.sum(fluo_img[roi_start[0]:roi_start[0]+w,roi_start[1]:roi_start[1]+h])
-# run.save_result('roi_fluo_img', roi_fluo_img)
+run.save_result('roi_fluo_img', roi_fluo_img)
 
 # plt.subplot(122)
 # show_img('MOT_fluo_img', MOT_fluo_img, h_scale=np.max(MOT_fluo_img))
@@ -101,7 +101,7 @@ try:
                 verticalalignment='bottom')
         gaussian_int = fp[4] *2* 3.14159*(fp[2]*fp[3])#+fp[5]*w*h
         if abs(fp[0]-246)>120: gaussian_int=0
-        run.save_result('roi_fluo_img', gaussian_int)
+        run.save_result('gaussian_int', gaussian_int)
         plt.figure('xxx')
         checkfit(fluo_img, fp)
         # plt.text(222.95, 300.15, """
@@ -141,13 +141,17 @@ try:
         
         if fp[4]>0 and -0.1<fp[0]<481 and -0.1<fp[1]<601:
             run.save_result('Gaussian_width_x', fp[2])
+            run.save_result('Gaussian_width_y', fp[3])
             run.save_result('Gaussian_height', fp[4])
             run.save_result('Gaussian_center_y',fp[0])
+            run.save_result('Gaussian_center_x',fp[1])
             
         else:
             run.save_result('Gaussian_width_x', np.nan)
+            run.save_result('Gaussian_width_y', np.nan)
             run.save_result('Gaussian_height', np.nan)
             run.save_result('Gaussian_center_y',np.nan)
+            run.save_result('Gaussian_center_x',fp[1])
         print('roi_fluo_img=',roi_fluo_img)
         print('Gaussian_height=',fp[4])
     else:

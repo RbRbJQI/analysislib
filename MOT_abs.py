@@ -27,13 +27,13 @@ def get_images(orientation):
         print('no bg \n', e)
     fluo = []
     try:
-        fluo = run.get_image(orientation='YZ', label = 'MOT_fluo_img', image='fluo_img')
+        fluo = run.get_image(orientation='xz', label = 'MOT_fluo_img', image='fluo_img')
     except:
         print('no fluo')
     return np.array(atom), np.array(probe), np.array(fluo)
 def avg_image(a):
     #bgr = np.mean(a[-100:-1,-100:-1])
-    bgr = 100
+    bgr = 20
     # for i in range(np.shape(a)[0]):
         # for j in range(np.shape(a)[1]):
             # if a[i][j]<=0:
@@ -101,9 +101,9 @@ OD_name = ax3.imshow(OD)
 # show_img('OD', OD, h_scale=0.5)
 OD_name.set_clim(0, 1)
 plt.colorbar(OD_name,ax=ax3)
-circle = patches.Circle((245,273),138, fill=None, edgecolor='r')
+circle = patches.Circle((289.3,296.5),138, fill=None, edgecolor='r')
 ax3.add_patch(circle)
-plt.title('probe_t='+str(round(df['t_tran_probe'],2))+'s')
+# plt.title('probe_t='+str(round(df['t_tran_probe'],2))+'s')
 try:
     # if int_OD>0.007:
     fp = fitgaussian2d(OD, ct)

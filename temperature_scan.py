@@ -8,9 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from gaussian2d import *
 
-# pipe_D= (419-157)*5.3e-3
-# mag_r = 9.525/pipe_D
-mag_r = 1/0.226
+pipe_D= (138*2)*5.3e-3
+mag_r = 9.525/pipe_D
+# mag_r = 1/0.226
 print(mag_r)
 
 length = 20

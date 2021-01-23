@@ -27,13 +27,13 @@ for index, row in df.iterrows():
             # hold_time = df['hold_time']
             for groupname in h5_file['results']:
                 resultsgroup = h5_file['results'][groupname]
-                if groupname=='MOT_abs':
-                    fluo_OD.append(h5_file['results'][groupname].attrs['fluo'])
+                if groupname=='MOT_fluo':
+                    # fluo_OD.append(h5_file['results'][groupname].attrs['fluo'])
                     if if_fit:
                         fp = h5_file['results'][groupname]['Gaussian_fit']
                         wd.append(fp[3])
                         ct.append([fp[0], fp[1]])
-                        t.append(h5_file['globals'].attrs['t_of_f'])
+                        t.append(h5_file['globals'].attrs['TOF'])
                     # int_OD.append(h5_file['results'][groupname].attrs['int_OD'])
                 # if groupname=='Science_abs':
                     # sci_abs.append(h5_file['results'][groupname].attrs['roi_OD'])
@@ -46,7 +46,7 @@ for index, row in df.iterrows():
         continue
 if if_fit:
     t, wd = np.array(t), np.array(wd)
-    t = t*1e3
+    t = t
     # fp_exp = fitexpansion(wd**2, t)
     fp_exp = np.polyfit(t**2, wd**2, 1)
     # title = ' sig_0='+str(round(fp_exp[0]))+' v='+str(round(fp_exp[1]))
