@@ -7,12 +7,15 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Select your sequence indices here 
-my_idx=[267] # The last sequence is default if the selection is empty.
-
 #var_x_name, var_y_name="MOT_quad_curr",('roi_fluo_img','a')
 #var_x_name, var_y_name="MOT_cooling_freq",('roi_fluo_img','a')
 var_x_name, var_y_name="MOT_B_bias_x",('roi_fluo_img','a')
+
+# The last sequence is default if the selection is empty.
+# Example: list(range(3,5))+[7,11]
+my_idx=[6] 
+
+font_size = 25
 
 df = lyse.data()
 groupname= ('MOT_fluo','MOT_fluo')
@@ -32,11 +35,10 @@ else:
 sequence_idx=str(my_idx)
 
 this_idx=this_idx.astype(int)
-x1 = x1[this_idx]
-y1 = y1[this_idx]
-
+x1, y1 = x1[this_idx], y1[this_idx]
 x1, y1 = np.array(x1), np.array(y1)
-x1, y1 = x1[np.argsort(x1)], y1[[np.argsort(x1)]]
+sort_idx = np.argsort(x1)
+x1, y1 = x1[sort_idx], y1[sort_idx]
 
 fit = np.polyfit(x1,y1,4)
 y_fit= fit[0]*x1**4+fit[1]*x1**3+fit[2]*x1**2+fit[3]*x1+fit[4]
@@ -55,13 +57,12 @@ ax1.text(0.1, 0.1, text_res,transform=ax1.transAxes)
 
 
 ax1.plot(x1, y_fit, color='blue')
-fit = [np.format_float_scientific(f,precision=3,sign=False) for f in fit]
+fit = [np.format_float_scientific(f,precision=1,sign=False) for f in fit]
 ax1.scatter(x1,y1)
 
-lplot = ax1.set_xlabel(var_x_name)
-
+ax1.set_xlabel(var_x_name)
 ax1.set_ylabel(var_y_name[0])
 plt.title("seq_index="+sequence_idx)
 
 fig.tight_layout()
-plt.rcParams.update({'font.size': 25})
+plt.rcParams.update({'font.size': font_size})
