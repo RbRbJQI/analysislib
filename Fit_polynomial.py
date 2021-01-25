@@ -10,15 +10,17 @@ from scipy.optimize import curve_fit
 
 groupname= ('MOT_fluo',)
 
-#var_x_name, var_y_name=('MOT_quad_curr',),('roi_fluo_img',)
-#var_x_name, var_y_name=('MOT_cooling_freq',),('roi_fluo_img',)
-var_x_name, var_y_name=('MOT_B_bias_x',),('roi_fluo_img',)
+# var_x_name, var_y_name=('MOT_quad_curr',),('roi_fluo_img',)
+# var_x_name, var_y_name=('MOT_cooling_freq',),('gaussian_int',)
+var_x_name, var_y_name=('molasses_cooling_freq_start',),('Gaussian_width_x',)
+# var_x_name, var_y_name=('CMOT_cooling_freq_start',),('roi_fluo_img',)
 
 # The last sequence is default if the selection is empty.
 # Example: list(range(3,5))+[7,11]
-my_idx=[26,27] 
+my_idx=[54] 
 n_order = 4 
 font_size = 25
+find_max =  False
 
 df = lyse.data()
 
@@ -56,7 +58,10 @@ popt, pcov = curve_fit(fit_func, x1, y1, p0=p0)
 xx = np.linspace(min(x1), max(x1), 5000)
 yy = fit_func(xx, *popt)
 ax1.plot(xx, yy)
-max_idx = np.argmax(yy)
+if find_max:
+    max_idx = np.argmax(yy)
+else:
+    max_idx = np.argmin(yy)
 max_x = xx[max_idx]
 print_text = "Fit to " + str(n_order) + "th poly order \nPeak @ x = " + str(np.round(max_x,3))
 ax1.text(0.1, 0.1, print_text , transform=ax1.transAxes)

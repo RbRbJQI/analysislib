@@ -11,8 +11,8 @@ import matplotlib.patches as patches
 import sys # to print warning messages
 
 #      horizontal, vertical
-roi_center = (220,270)
-roi_radius = 150
+roi_center = (320,310)
+roi_radius = 200
 font_size = 10
 camera_saturation = 4095
 
@@ -68,8 +68,6 @@ axes[0,1].title.set_text("fluo")
 try:
     fp = fitgaussian2d(fluo_img, roi_center)
     if np.isnan(fp[0])==False:
-        
-        fp[0:4] = [int(f) for f in fp[0:4]]
         plt.text(2, 1, """
         y : %.1f
         x : %.1f
@@ -82,7 +80,7 @@ try:
         fitted_img = gaussian(*fp)(*np.indices(np.shape(fluo_img)))   
         # subplot 3: Gaussian fitted fluo
         Gaussian_fit_name=axes[1,0].imshow(fitted_img)
-        Gaussian_fit_name.set_clim(0, np.max(fitted_img))
+        Gaussian_fit_name.set_clim(0, np.max(orig_fluo))
         roi = patches.Circle(roi_center,roi_radius,linewidth=1, fill=None,edgecolor='r')
         axes[1,0].add_patch(roi)
         axes[1,0].title.set_text("Gaussian fit")
