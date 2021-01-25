@@ -12,21 +12,21 @@ groupname= ('MOT_fluo',)
 
 # var_x_name, var_y_name=('MOT_quad_curr',),('roi_fluo_img',)
 # var_x_name, var_y_name=('MOT_cooling_freq',),('gaussian_int',)
-var_x_name, var_y_name=('molasses_cooling_freq_start',),('Gaussian_width_x',)
-# var_x_name, var_y_name=('CMOT_cooling_freq_start',),('roi_fluo_img',)
+# var_x_name, var_y_name=('molasses_duration','molasses_duration'),('Gaussian_width_x','Gaussian_width_y')
+var_x_name, var_y_name=('CMOT_duration',),('Gaussian_width_x',)
 
 # The last sequence is default if the selection is empty.
 # Example: list(range(3,5))+[7,11]
-my_idx=[54] 
+my_idx=[50] 
 n_order = 4 
 font_size = 25
 find_max =  False
 
 df = lyse.data()
-
-
-x1 = df[var_x_name[0]]
-y1= df[groupname[0]][var_y_name[0]]
+x,y = [], []
+for ii in range(len(var_y_name)):
+    x.append(df[var_x_name[ii]].values)
+    y.append(df[groupname[0]][var_y_name[ii]].values)
 
 if my_idx==[]:
     this_idx = np.argwhere(df["sequence_index"].values==df["sequence_index"][-1]).flatten()
@@ -37,38 +37,44 @@ else:
         this_temp_idx = np.argwhere(df["sequence_index"].values==iidx).flatten()
         this_idx = np.append(this_idx, this_temp_idx)
 sequence_idx=str(my_idx)
-
+x, y = np.array(x), np.array(y)
 this_idx=this_idx.astype(int)
-x1, y1 = x1[this_idx], y1[this_idx]
-x1, y1 = np.array(x1), np.array(y1)
-sort_idx = np.argsort(x1)
-x1, y1 = x1[sort_idx], y1[sort_idx]
+x, y = x[:, this_idx], y[:, this_idx]
 
-plt.figure()
-fig, ax1 = plt.subplots()
-# plot data
-ax1.scatter(x1,y1)
+for ii in range(len(var_y_name)):
+    sort_idx = np.argsort(x[ii])
+    x[ii], y[ii] = x[ii,sort_idx], y[ii,sort_idx]
+
+fig, axes = plt.subplots(1,len(var_y_name))
+if len(var_y_name)==1:  axes = [axes]
+fig.set_size_inches(6*len(var_y_name), 4)
+# plot data 
+for ii in range(len(var_y_name)):
+    axes[ii].scatter(x[ii],y[ii])
 
 def fit_func(x, *coeffs):
     y = np.polyval(coeffs, x)
     return y
  
 p0 = np.ones(n_order) 
-popt, pcov = curve_fit(fit_func, x1, y1, p0=p0)
-xx = np.linspace(min(x1), max(x1), 5000)
+popt, pcov = curve_fit(fit_func, x[0], y[0], p0=p0)
+xx = np.linspace(min(x[0]), max(x[0]), 5000)
 yy = fit_func(xx, *popt)
-ax1.plot(xx, yy)
+
+axes[0].plot(xx, yy)
 if find_max:
     max_idx = np.argmax(yy)
 else:
     max_idx = np.argmin(yy)
 max_x = xx[max_idx]
 print_text = "Fit to " + str(n_order) + "th poly order \nPeak @ x = " + str(np.round(max_x,3))
-ax1.text(0.1, 0.1, print_text , transform=ax1.transAxes)
+axes[0].text(0.1, 0.1, print_text , transform=axes[0].transAxes)
 
-ax1.set_xlabel(var_x_name[0])
-ax1.set_ylabel(var_y_name[0])
-plt.title("seq_index="+sequence_idx)
+for ii in range(len(var_y_name)):
+    axes[ii].set_xlabel(var_x_name[ii])
+    axes[ii].set_ylabel(var_y_name[ii])
+
+plt.suptitle("seq_index="+sequence_idx)
 
 fig.tight_layout()
 plt.rcParams.update({'font.size': font_size})

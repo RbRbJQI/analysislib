@@ -13,7 +13,7 @@ kB = 1.38e-23
 mRb = 1.443e-25
 h = 6.63e-34
 
-threshold = 14 # ms
+threshold = 1 # ms
 df = lyse.data()
 # groupname='MOT_abs'
 # groupname='Science_abs'
