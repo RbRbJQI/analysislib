@@ -8,6 +8,9 @@ import numpy as np
 import time
 from gaussian2d import *
 
+
+font_size = 20
+
 def get_images():
     atom = run.get_image(orientation='science', label = 'science_img', image='atom')
     probe = run.get_image(orientation='science', label = 'science_img', image='probe')
@@ -95,16 +98,18 @@ try:
         run.save_result('center_x', fp[0])
         run.save_result('center_y', fp[1])
         print(roi_OD)
-        plt.text(0.95, 0.05, """
+        ax = plt.gca()
+        plt.text(0.95, 0.15, """
         x : %.1f
         y : %.1f
         width_x : %.1f
         width_y : %.1f""" %(fp[0], fp[1], fp[2], fp[3]),
-                fontsize=8, horizontalalignment='right',
-                verticalalignment='bottom')#, transform=ax.transAxes)
+                fontsize=font_size, horizontalalignment='right',
+                verticalalignment='bottom', transform=ax.transAxes)
     else:
         roi_OD, peak_OD=0,0
 except Exception as e:
     print('Error::::::::::::::'+e)
 # print(df['MOT_abs','Gaussian_fit'])
 #plt.savefig('C:/Users/RbRb/Desktop/'+str(time.time())+'.png')
+plt.rcParams.update({'font.size': font_size})

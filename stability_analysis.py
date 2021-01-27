@@ -6,11 +6,12 @@ from analysislib.common import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+# import smoothfit
 
 df = lyse.data()
 groupname= ('MOT_fluo','a')
 
-var_y_name=('roi_fluo_img','a')
+var_y_name=('gaussian_int','a')
 
 y1= df[groupname[0]][var_y_name[0]].values
 
@@ -31,7 +32,14 @@ this_idx=this_idx.astype(int)
 y1 = y1[this_idx]
 plt.figure()
 fig, ax1 = plt.subplots()
-ax1.plot(y1)
+
+x1 = np.arange(len(y1))
+# u = smoothfit.fit1d(x1, y1, 0, np.max(x1), 1000, degree=1, lmbda=1e-5)
+# y_fit = u(x1)
+
+ax1.plot(x1, y1)
+# ax1.plot(x1, y_fit)
+
 std_y = np.format_float_scientific(np.std(y1),precision=2,sign=False)
 avg_y = np.format_float_scientific(np.average(y1),precision=2,sign=False)
 

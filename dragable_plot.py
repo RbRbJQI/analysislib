@@ -3,7 +3,10 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
 class MoveGraphLine(object):
-    def __init__(self, ax, r0):
+    def __init__(self, path, ax, r0, radius):
+        self.path = path
+        from lyse import Run
+        self.run = Run(self.path)
         self.ax = ax
         self.figcanvas = self.ax.figure.canvas
         self.x, self.y = r0
@@ -11,9 +14,11 @@ class MoveGraphLine(object):
         self.point = None
         self.pressed = False
         self.start = False
-        roi = patches.Circle(r0,0.1,linewidth=1, fill=None,edgecolor='r')
+        self.radius = radius
+        roi = patches.Circle(r0,self.radius,linewidth=1, fill=None,edgecolor='r')
         self.ax.add_patch(roi)
         self.graf = roi
+        self.run.save_result('ROI', (self.x, self.y, self.radius))
 
         self.figcanvas.mpl_connect('button_press_event', self.mouse_press)
         self.figcanvas.mpl_connect('button_release_event', self.mouse_release)
@@ -27,6 +32,7 @@ class MoveGraphLine(object):
             self.pressed = False
             self.start = False
             self.point = None
+            self.run.save_result('ROI', (self.x, self.y, self.radius))
             return
 
     def mouse_press(self, event):
@@ -46,20 +52,32 @@ class MoveGraphLine(object):
 
         self.x, self.y = event.xdata, event.ydata
         self.ax.patches = []
-        self.graf = patches.Circle([event.xdata, event.ydata],0.1,linewidth=1, fill=None,edgecolor='r')
-        self.ax.title.set_text(str(self.x))
+        self.graf = patches.Circle([event.xdata, event.ydata],self.radius,linewidth=1, fill=None,edgecolor='r')
         self.ax.add_patch(self.graf)
         self.figcanvas.draw()
+        
+    def submit_radius(self, text):
+        self.radius = eval(text)
+        self.ax.patches = []
+        self.graf = patches.Circle([self.x, self.y],self.radius,linewidth=1, fill=None,edgecolor='r')
+        self.ax.add_patch(self.graf)
+        self.run.save_result('ROI', (self.x, self.y, self.radius))
 
 
+if __name__ == '__main__':
+    fig, ax1 = plt.subplots(nrows=1, ncols=1)
+    roi_center = [0,0]
+    x0, y0 = roi_center
+    radius = 0.1
+    ax1.title.set_text(str(x0))
+
+    moveline = MoveGraphLine(path, ax1, (x0, y0), radius)
+    from matplotlib.widgets import TextBox
 
 
+    axbox = plt.axes([0.7, 0.85, 0.1, 0.05])
+    text_box = TextBox(axbox, 'Radius', initial='0.1')
+    text_box.on_submit(moveline.submit_radius)
 
-fig, ax1 = plt.subplots(nrows=1, ncols=1)
-roi_center = [0,0]
-x0, y0 = roi_center
-ax1.title.set_text(str(x0))
 
-moveline = MoveGraphLine(ax1, (x0, y0))
-
-plt.show()
+    plt.show()
