@@ -8,10 +8,15 @@ import numpy as np
 import time
 from gaussian2d import *
 import matplotlib.patches as patches
+import copy
 
-for j in ['A','B','C']:
-	for i in range(1,5):
-		for k in ['+','-']:print(str(i)+j+k)
+font_size = 10
+XZ_center = (285,158)
+XY_center = (265,307)
+science_center = (234,290)
+
+camera_saturation = 4095
+OD_clim = [] # Use the fitted peak OD as default when left empty
 
 def get_images(orientation):
     atom = run.get_image(orientation=orientation, label = 'abs_img', image='atom')
@@ -25,135 +30,120 @@ def get_images(orientation):
         probe = np.copy(probe - bg)
     except Exception as e:
         print('no bg \n', e)
-    fluo = []
-    try:
-        fluo = run.get_image(orientation='xz', label = 'MOT_fluo_img', image='fluo_img')
-    except:
-        print('no fluo')
-    return np.array(atom), np.array(probe), np.array(fluo)
-def avg_image(a):
-    #bgr = np.mean(a[-100:-1,-100:-1])
-    bgr = 20
-    # for i in range(np.shape(a)[0]):
-        # for j in range(np.shape(a)[1]):
-            # if a[i][j]<=0:
-                # try:
-                    # a_neigh = np.array([a[i+1][j], a[i-1][j], a[i][j+1], a[i][j-1], a[i-1][j-1], a[i+1][j-1]])
-                    # a_neigh = a_neigh[a_neigh>0]
-                    # a[i][j] = np.copy( np.mean(a_neigh) )
-                # except:
-                    # a[i][j] = bgr
-    a[where(a<=bgr)] = bgr
-    
-    return a
-def show_img(name, a, l_scale = 0, h_scale=4096):
-    # plt.figure(name)
-    plt.imshow(a) # IBS: use the "extent" kwarg to set the scale in real units rather than pixels.
-    
-    # if type(h_scale)==int:
-        # if type(l_scale)==int:
-            # plt.clim(l_scale,h_scale)
-        # else:
-            # plt.clim(0,h_scale)
-    # else:
-        # if type(l_scale)==int:
-            # plt.clim(l_scale,np.max(a))
-    plt.clim(l_scale,h_scale)
-    plt.colorbar()
+    return np.array(atom), np.array(probe)  
     
 df = data(path)
 run = Run(path)
-atom, probe, fluo = get_images(df['probe_direction'].upper())
-atom, probe = [avg_image(img) for img in [atom, probe]]
+orientation = df['probe_direction']
+atom, probe = get_images(orientation)
 
-OD = -np.log(np.divide(atom, probe))
+# camera saturation warning
+if np.max(probe) >= camera_saturation or np.max(atom) >= camera_saturation:
+    message = 'User Warning: Camera saturated!'
+    sys.stderr.write(message+'\n')
 
-if df['probe_direction']=='xy': 
-    ct = [265,307]
-else:
-    ct=[285,158]
-import cv2
-mask = np.zeros(OD.shape, dtype=np.uint8)
-mask = cv2.circle(mask, tuple(ct), 150, 1, -1)
-# OD = np.multiply(OD, mask)
+mask_bad = np.zeros(probe.shape)
+OD = np.zeros(probe.shape)
+mask_bad[probe<=0] = np.nan # Set OD = Nan, wherever no probe light detected in the probe shot
+mask_bad[atom<=0] = np.nan # Set OD = Nan, wherever no probe light detected in the atom shot
+OD[mask_bad==0]= -np.log(np.divide(atom[mask_bad==0], probe[mask_bad==0]))
+OD[mask_bad==np.nan] = np.nan
 
-int_OD = np.mean(OD)
-fluo_OD = np.mean(fluo)
-if not np.isnan(fluo_OD):
-    run.save_result('fluo', fluo_OD)
-    plt.figure('fluo_img')
-    plt.imshow(fluo)
+plt.figure('abs_img')
+fig, axes = plt.subplots(2,3)
 
-print('int_OD: ',int_OD)
-run.save_result('int_OD', int_OD)
-plt.figure('img')
-fig, (ax1, ax2, ax3)=plt.subplots(3,1)
-# plt.subplot(311)
-probe_name = ax1.imshow(probe)
-plt.colorbar(probe_name, ax=ax1)
-# show_img('probe', probe)
-# plt.subplot(312)
-# show_img('atom', atom)
-atom_name = ax2.imshow(atom)
-plt.colorbar(atom_name, ax=ax2)
-# plt.subplot(313)
-OD_name = ax3.imshow(OD)
-# show_img('OD', OD, h_scale=0.5)
-OD_name.set_clim(0, 1)
-plt.colorbar(OD_name,ax=ax3)
-circle = patches.Circle((289.3,296.5),138, fill=None, edgecolor='r')
-ax3.add_patch(circle)
-# plt.title('probe_t='+str(round(df['t_tran_probe'],2))+'s')
+probe_name = axes[0,0].imshow(probe)
+probe_name.set_clim(0, np.max(probe))
+axes[0,0].title.set_text('Probe-bg')
+
+atom_name = axes[0,1].imshow(atom)
+atom_name.set_clim(0, np.max(probe))
+axes[0,1].title.set_text('Atom-bg')
+
+# Show red when OD = nan
+cmap = copy.copy(matplotlib.cm.get_cmap("viridis"))
+cmap.set_bad(color = 'red')
+OD_name = axes[1,0].imshow(OD, cmap=cmap)
+
+axes[1,0].title.set_text('OD\nNo light set to nan\nnan in red')
+
 try:
-    # if int_OD>0.007:
-    fp = fitgaussian2d(OD, ct)
-    if np.isnan(fp[0])==False:
-        # plt.contour(gaussian(fp[0],fp[1],fp[2],fp[3],fp[4],fp[5])(*np.indices(np.shape(OD))), levels=[0.1,0.5])
-        plt.figure('sda')
-        plt.imshow(OD)
-        # plt.clim(0,2)
-        # plt.contour(gaussian(fp[0],fp[1],fp[2],fp[3],fp[4],fp[5])(*np.indices(np.shape(OD))))
-        print('fit: ',fp)
-        checkfit(OD, fp)
-        run.save_result_array('Gaussian_fit', fp)
-        fp[0:4] = [int(f) for f in fp[0:4]]
-
-        plt.text(0.95, 0.05, """
-        x : %.1f
+    OD_nan_ignore = np.ma.array(OD, mask=np.isnan(OD)) # Use a mask to mark the NaNs
+    fp = fitgaussian2d(OD_nan_ignore, eval(orientation+'_center'))
+    if np.isnan(fp[0])==False:       
+        axes[1,0].text(0.01, 0.05, """
         y : %.1f
-        width_x : %.1f
-        width_y : %.1f""" %(fp[0], fp[1], fp[2], fp[3]),
-                fontsize=8, horizontalalignment='right',
-                verticalalignment='bottom')#, transform=ax.transAxes)
-        x0, y0 = [158, 272]
-        # fp[0:2] = x0, y0
-        crop = 175#int(fp[3]/2)
-        roi_OD = np.sum(OD[int(fp[0]-crop):int(fp[0]+crop), int(fp[1]-crop):int(fp[1]+crop)])
-        gaussian_int = fp[4] *2* 3.14159*(fp[2]*fp[3])#+fp[5]*w*h
-        # run.save_result('roi_OD', roi_OD)
-        run.save_result('roi_OD', gaussian_int)
-       
+        x : %.1f
+        width_y : %.1f
+        width_x : %.1f""" %(fp[0], fp[1], fp[2], fp[3]),
+                fontsize=font_size, horizontalalignment='left',
+                verticalalignment='bottom', color='white', transform=axes[1,0].transAxes)
+
+        fitted_img = gaussian(*fp)(*np.indices(np.shape(OD)))   
+        # subplot: Gaussian fitted OD
+        Gaussian_fit_name=axes[1,1].imshow(fitted_img)
+        axes[1,1].title.set_text("Gaussian fitted OD")
         
-        if fp[4]>0:
-            run.save_result('Gaussian_width_x', fp[2])
+        # subplot: 1D cut of OD
+        axes[0,2].plot(OD_nan_ignore[round(fp[0]),range(OD_nan_ignore.shape[1])])
+        axes[0,2].plot(gaussian(fp[0],fp[1],fp[2],fp[3],fp[4],fp[5])(fp[0],range(OD_nan_ignore.shape[1])))
+        axes[0,2].set_xlabel('x')
+        axes[0,2].set_ylabel('OD(x,'+str(round(fp[0]))+')')
+        pos = axes[0,2].get_position()
+        axes[0,2].set_position([pos.x0+0.07, pos.y0+0.05, pos.x1-pos.x0, pos.y1-pos.y0])
+        
+        axes[1,2].plot(OD_nan_ignore[range(OD_nan_ignore.shape[0]),round(fp[1])])
+        axes[1,2].plot(gaussian(fp[0],fp[1],fp[2],fp[3],fp[4],fp[5])(range(OD_nan_ignore.shape[0]),fp[1]))
+        axes[1,2].set_xlabel('y')
+        axes[1,2].set_ylabel('OD('+str(round(fp[1]))+',y)')
+        pos = axes[1,2].get_position()
+        axes[1,2].set_position([pos.x0+0.07, pos.y0, pos.x1-pos.x0, pos.y1-pos.y0])
+        
+        if OD_clim==[]:
+            OD_clim = [0-0.1,gaussian(fp[0],fp[1],fp[2],fp[3],fp[4],fp[5])(fp[0],fp[1])+0.3]
+        
+        gaussian_int = fp[4] *2* np.pi*(fp[2]*fp[3])       
+        run.save_result_array('Gaussian_fit', fp) # save Gaussian fit
+        if fp[4]>0 and 0<fp[0]<probe.shape[0] and 0<fp[1]<probe.shape[1]:
+            run.save_result('Gaussian_center_y',fp[0])
+            run.save_result('Gaussian_center_x',fp[1])
+            run.save_result('Gaussian_width_y', fp[2])
+            run.save_result('Gaussian_width_x', fp[3])
             run.save_result('Gaussian_height', fp[4])
-            
+            run.save_result('gaussian_int', gaussian_int)
         else:
-            run.save_result('Gaussian_width_x', np.nan)
-            run.save_result('Gaussian_height', np.nan)
-        print('roi_OD=',roi_OD)
-        print('Gaussian_height=',fp[4])
-        # print('life: ',roi_OD/fluo_OD)
-        # run.save_result('optimized_OD',np.sqrt(fluo_OD)*roi_OD)
+            run.save_result('Gaussian_center_y',np.nan)
+            run.save_result('Gaussian_center_x',np.nan) 
+            run.save_result('Gaussian_width_y', np.inf)
+            run.save_result('Gaussian_width_x', np.inf)
+            run.save_result('Gaussian_height', 0)
+            run.save_result('gaussian_int', 0)
+
     else:
-        run.save_result('roi_OD', 0)
+        run.save_result('Gaussian_center_y',np.nan)
+        run.save_result('Gaussian_center_x',np.nan) 
+        run.save_result('Gaussian_width_y', np.inf)
+        run.save_result('Gaussian_width_x', np.inf)
         run.save_result('Gaussian_height', 0)
-        # run.save_result('optimized_OD',np.sqrt(fluo_OD)*roi_OD)     
-# else:
-    # run.save_result('roi_OD', np.nan)
-    # run.save_result('Gaussian_height', np.nan)
-    # run.save_result('Gaussian_width_x', np.nan)
-    # run.save_result('optimized_OD',np.sqrt(fluo_OD)*roi_OD)
+        run.save_result('gaussian_int', 0)
+
 
 except Exception as e:
     print('Error::::::::::::::'+str(e))
+
+if OD_clim==[]:
+    OD_clim = [0-0.1,3+0.1]
+
+OD_name.set_clim(OD_clim)
+Gaussian_fit_name.set_clim(OD_clim)
+axes[0,2].set_ylim(OD_clim)
+axes[1,2].set_ylim(OD_clim)
+    
+# colorbar
+cbaxes = fig.add_axes([0.01, 0.55, 0.01, 0.4]) # position = [x0,y0,x1,y1]. add_axes = [x0,y0,width,height]
+fig.colorbar(probe_name, cax = cbaxes)
+
+cbaxes = fig.add_axes([0.01, 0.05, 0.01, 0.4]) # position = [x0,y0,x1,y1]. add_axes = [x0,y0,width,height]
+fig.colorbar(OD_name, cax = cbaxes)
+
+plt.rcParams.update({'font.size': font_size})

@@ -12,7 +12,21 @@ import matplotlib.pyplot as plt
 
 def gaussian(cx, cy, wx, wy, height, shift):
     return lambda x,y: height*np.exp((-((x-cx)/wx)**2-((y-cy)/wy)**2)/2)+shift
-
+    # return lambda x,y: height*np.exp(-np.sqrt((x-cx)**2/wx**2+(y-cy)**2/wy**2))+shift
+    
+# class Mask(object):
+    # def __init__(self, ct, rad):
+        # self.ct = ct
+        # self.rad = rad
+    # def ifin(self, a,b,c,d,e,f):
+        # return lambda x,y:(x-self.ct[0])**2 + (y-self.ct[1])**2 < self.rad**2
+        
+# def showmask(data,mask):
+    # data1 = np.copy(data)
+    # for x in range(len(data)):
+        # for y in range(len(data[0])):
+            # data1[x,y] = data[x,y]*(np.abs((x-mask.ct[0])**2 + (y-mask.ct[1])**2 - mask.rad**2)>9) + 100*(np.abs((x-mask.ct[0])**2 + (y-mask.ct[1])**2 - mask.rad**2)<9)
+    # return data1
 
 def guessparam(data,ct):
     dsum = data.sum()

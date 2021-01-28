@@ -106,8 +106,8 @@ try:
         width_y : %.1f
         width_x : %.1f
         height : %.1f""" %(fp[0], fp[1], fp[2], fp[3], fp[4]),
-                fontsize=font_size, horizontalalignment='right', color='white',
-                verticalalignment='bottom', transform=axes[0,0].transAxes)
+                fontsize=font_size, horizontalalignment='right', 
+                verticalalignment='bottom', color='white', transform=axes[0,0].transAxes)
         
         fitted_img = gaussian(*fp)(*np.indices(np.shape(fluo_img)))   
         # subplot 3: Gaussian fitted fluo
@@ -155,12 +155,19 @@ try:
             run.save_result('Distance_to_center',np.inf)
 
     else:
-        run.save_result('gaussian_int', np.nan)
-        run.save_result('Gaussian_height', np.nan)
+        run.save_result('Gaussian_center_y',np.nan)
+        run.save_result('Gaussian_center_x',np.nan) 
+        run.save_result('Gaussian_width_y', np.inf)
+        run.save_result('Gaussian_width_x', np.inf)
+        run.save_result('Gaussian_height', 0)
+        run.save_result('gaussian_int', 0)
+        run.save_result('PSD_singleshot', 0)
+        run.save_result('Distance_to_center',np.inf)
+        
 except Exception as e:
     print('Error::::::::::::::'+str(e))
  
 plt.rcParams.update({'font.size': font_size})
 # color bar
 cbar = fig.colorbar(orig_fluo_name, ax=axes.ravel().tolist()) # This is not compatible with tight layout
-cbar.ax.tick_params(labelsize=font_size)
+
