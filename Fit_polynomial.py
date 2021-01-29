@@ -9,17 +9,17 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
 # groupname= ('MOT_fluo',)
-groupname= ('Science_abs',)
+groupname= ('MOT_abs',)
 
 # var_x_name, var_y_name=('MOT_quad_curr',),('roi_fluo_img',)
 # var_x_name, var_y_name=('MOT_cooling_freq',),('gaussian_int',)
 # var_x_name, var_y_name=('molasses_duration','molasses_duration'),('Gaussian_width_x','Gaussian_width_y')
 # var_x_name, var_y_name=('quad_trap_B_bias_end_z','quad_trap_B_bias_end_z'),('PSD_singleshot','Distance_to_center')
-var_x_name, var_y_name=('probe_science_cooling_freq',),('roi_OD',)
+var_x_name, var_y_name=('probe_science_repump_freq',),('gaussian_int',)
 
 # The last sequence is default if the selection is empty.
 # Example: list(range(3,5))+[7,11]
-my_idx=[50,51] 
+my_idx=[48] 
 n_order = 4 
 font_size = 20
 find_max = [True] # Match the size of this list with len(var_y_name)

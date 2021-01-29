@@ -15,18 +15,18 @@ def gaussian(cx, cy, wx, wy, height, shift):
 
 
 def guessparam(data,ct):
-    dsum = data.sum()
+    dsum = np.nansum(data)
     x, y = np.indices(data.shape)
-    center = [(x*data).sum()/dsum, (y*data).sum()/dsum]
+    center = [np.nansum(x*data)/dsum, np.nansum(y*data)/dsum]
     if min(center)<=0:
         center = ct
-    width = [np.sqrt(abs((np.arange(data[:, int(c)].size)-c)**2*data[:, int(c)]).sum()/data[:, int(c)].sum()) for c in center]
+    width = [np.sqrt(abs(np.nansum((np.arange(data[:, int(c)].size)-c)**2*data[:, int(c)])/np.nansum(data[:, int(c)]))) for c in center]
     try:
-        width = [np.sqrt(abs(((np.arange(data[:, int(c)].size)-c)**2*data[:, int(c)]).sum()/data[:, int(c)].sum())) for c in center]
+        width = [np.sqrt(abs(np.nansum((np.arange(data[:, int(c)].size)-c)**2*data[:, int(c)])/np.nansum(data[:, int(c)]))) for c in center]
     except:
         center = ct
-        width = [np.sqrt(abs(((np.arange(data[:, int(c)].size)-c)**2*data[:, int(c)]).sum()/data[:, int(c)].sum())) for c in center]
-    height = data.max()
+        width = [np.sqrt(abs(np.nansum(((np.arange(data[:, int(c)].size)-c)**2*data[:, int(c)]))/np.nansum(data[:, int(c)]))) for c in center]
+    height = np.nanmax(data)
     for wi in range(2):
         if np.isnan(width[wi]):
             width[wi] = width[abs(1-wi)]

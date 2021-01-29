@@ -14,7 +14,7 @@ from matplotlib.widgets import TextBox
 import h5py
 
 #      horizontal, vertical
-roi_center = (265,246)
+roi_center = (269,306)
 roi_radius = 145
 target_center = (265,246)
 Do_dynamic_ROI = 0
@@ -48,6 +48,8 @@ if Do_dynamic_ROI:
         
 df = data(path)
 run = Run(path)
+my_idx = df["sequence_index"]
+sequence_idx=str(my_idx)
 df_all = data()
 
 if Do_dynamic_ROI:
@@ -166,7 +168,8 @@ try:
         
 except Exception as e:
     print('Error::::::::::::::'+str(e))
- 
+
+plt.suptitle("seq_index="+sequence_idx)
 plt.rcParams.update({'font.size': font_size})
 # color bar
 cbar = fig.colorbar(orig_fluo_name, ax=axes.ravel().tolist()) # This is not compatible with tight layout
