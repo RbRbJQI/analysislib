@@ -9,13 +9,13 @@ import matplotlib.pyplot as plt
 
 groupname= ('MOT_fluo',)
 
-var_x_name, var_y_name=("MOT_load_time",),('roi_fluo_img',)
-# var_x_name, var_y_name=('quad_trap_hold_time',),('roi_fluo_img',)
+# var_x_name, var_y_name=("MOT_load_time",),('roi_fluo_img',)
+var_x_name, var_y_name=('quad_trap_hold_time',),('roi_fluo_img',)
 
 # The last sequence is default if the selection is empty.
 # Example: list(range(3,5))+[7,11]
-my_idx=[64] 
-fix_long_time_value=0 # choose 1 if the exponential decays to 0
+my_idx=[17,19] 
+fix_long_time_value=1 # choose 1 if the exponential decays to 0
 
 font_size = 15
 

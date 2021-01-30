@@ -13,7 +13,7 @@ kB = 1.38e-23
 mRb = 1.443e-25
 h = 6.63e-34
 
-threshold = 0.0017
+threshold = 1 # ms
 df = lyse.data()
 # groupname='MOT_abs'
 # groupname='Science_abs'
@@ -25,11 +25,10 @@ y0=df[groupname][var_y_name]
 # mag_r = 9.525/pipe_D
 # mag_r = 1/0.4#1/0.226#df['']
 mag_r = 4.86#1/0.226#df['']
-print(mag_r)
 
 
 ind = 0
-print(len(x0))
+
 while ind<len(x0)-1:
     x, y = [], []
     start_ind = ind
@@ -40,8 +39,7 @@ while ind<len(x0)-1:
         if ind>=len(x0)-1: break
         elif x0[ind]>x0[ind+1]: break
         ind+=1
-    # print(x,y)
-    # print()
+
     if ind>=len(x0)-1 and x0[ind]<threshold:   
         run = lyse.Run(df['filepath'][ind])
         run.save_result('PSD', np.nan)

@@ -49,7 +49,7 @@ OD = np.zeros(probe.shape)
 mask_bad[probe<=0] = np.nan # Set OD = Nan, wherever no probe light detected in the probe shot
 mask_bad[atom<=0] = np.nan # Set OD = Nan, wherever no probe light detected in the atom shot
 OD[mask_bad==0] = -np.log(np.divide(atom[mask_bad==0], probe[mask_bad==0]))
-OD[mask_bad!=0] = np.nan
+OD[np.isnan(mask_bad)] = np.nan # np.nan is not comparable to np.nan directly. Input: np.nan==np.nan  Output: False
 suptitle_text = 'Number of pixels with no detected light = '+str(np.sum(np.isnan(OD)))
 print(suptitle_text)
 
@@ -69,10 +69,10 @@ cmap = copy.copy(matplotlib.cm.get_cmap("viridis"))
 cmap.set_bad(color = 'red')
 OD_name = axes[1,0].imshow(OD, cmap=cmap)
 
-axes[1,0].title.set_text('OD')
+axes[1,0].title.set_text('OD\nno light in red')
 
 try:
-    OD_nan_ignore = np.nan_to_num(OD)
+    OD_nan_ignore = np.nan_to_num(OD) # Set nan to 0 for fitting
     fp = fitgaussian2d(OD_nan_ignore, eval(orientation+'_center'))
     if np.isnan(fp[0])==False:       
         axes[0,2].text(0, 1, """

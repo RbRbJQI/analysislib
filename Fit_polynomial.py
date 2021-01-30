@@ -15,11 +15,11 @@ groupname= ('MOT_abs',)
 # var_x_name, var_y_name=('MOT_cooling_freq',),('gaussian_int',)
 # var_x_name, var_y_name=('molasses_duration','molasses_duration'),('Gaussian_width_x','Gaussian_width_y')
 # var_x_name, var_y_name=('quad_trap_B_bias_end_z','quad_trap_B_bias_end_z'),('PSD_singleshot','Distance_to_center')
-var_x_name, var_y_name=('probe_science_repump_freq',),('gaussian_int',)
+var_x_name, var_y_name=('evap_rf_freq_start',),('Gaussian_height',)
 
 # The last sequence is default if the selection is empty.
 # Example: list(range(3,5))+[7,11]
-my_idx=[48] 
+my_idx=[356,357,358] 
 n_order = 4 
 font_size = 20
 find_max = [True] # Match the size of this list with len(var_y_name)

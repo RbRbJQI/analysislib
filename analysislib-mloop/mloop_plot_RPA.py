@@ -33,6 +33,7 @@ try:
         # plt.plot(x_p, fake_result(x_p, s=0))
         # plt.axis(ymin=18500, ymax=27500)
         plt.title('M-LOOP session: {:}'.format(mloop_session))
-        # plt.show()
+        plt.rcParams.update({'font.size': 20})
+        plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.2)
 except Exception as e:
     print (e)
