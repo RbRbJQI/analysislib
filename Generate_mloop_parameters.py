@@ -15,7 +15,13 @@ MHz = 1e6
 us = 1e-6
 ms = 1e-3
 
-optimize_group = ['transport_shim_Mloop']
+optimize_group = ['quad_trap_Mloop','transport_shim_Mloop']
+
+'''
+Don't use var to set min_v and max_v!
+AFter optimization, we will run this script again. We compare var with the manual limits to see whether an variable is at the boundary.
+'''
+
 
 try:
     with h5py.File(file,'r') as h5_file:
@@ -75,20 +81,23 @@ try:
                     min_v, max_v = 2.5-5, 2.5+5
                 if 'quad_trap_B_bias_end_z' in var_name:
                     min_v, max_v = 0.74-5, 0.74+5
-                if 'quad_trap_B_bias_start_x' in var_name:
-                    min_v, max_v = -2.3-1, -2.3+1
-                if 'quad_trap_B_bias_start_y' in var_name:
-                    min_v, max_v = 1.24-1, 1.24+1
-                if 'quad_trap_B_bias_start_z' in var_name:
-                    min_v, max_v = -1, +1
-                if 'quad_trap_quad_curr_end' in var_name:
-                    min_v, max_v = 30, 40
-                if 'quad_trap_quad_curr_start' in var_name:
-                    min_v, max_v = 28-5, 28+5
-                if 'quad_trap_quad_ramp_start_delay' in var_name:
-                    min_v, max_v = 10, 40
-                if 'quad_trap_ramp_duration' in var_name:
-                    min_v, max_v = 10, 60                    
+                if 0:
+                    if 'quad_trap_B_bias_start_x' in var_name:
+                        min_v, max_v = -2.3-1, -2.3+1
+                    if 'quad_trap_B_bias_start_y' in var_name:
+                        min_v, max_v = 1.24-1, 1.24+1
+                    if 'quad_trap_B_bias_start_z' in var_name:
+                        min_v, max_v = -1, +1
+                    if 'quad_trap_hold_time' in var_name:
+                        min_v, max_v = 10, 40
+                    if 'quad_trap_quad_curr_end' in var_name:
+                        min_v, max_v = 30, 40
+                    if 'quad_trap_quad_curr_start' in var_name:
+                        min_v, max_v = 28-5, 28+5
+                    if 'quad_trap_quad_ramp_start_delay' in var_name:
+                        min_v, max_v = 10, 40
+                    if 'quad_trap_ramp_duration' in var_name:
+                        min_v, max_v = 10, 60                    
 
                 '''
                 transport_speed_Mloop
@@ -96,63 +105,119 @@ try:
                 if 'move_dt_rel_1' in var_name:
                     min_v, max_v = 5.6-0.2, 5.6+0.2
                 if 'move_dt_rel_2' in var_name:
-                    min_v, max_v = 1.34-0.2, 1.34+0.2  
+                    min_v, max_v = 1.24-0.2, 1.24+0.2  
                 if 'move_dt_rel_3' in var_name:
-                    min_v, max_v = 3.99-0.2, 3.99+0.2    
+                    min_v, max_v = 4.09-0.2, 4.09+0.2    
                 if 'move_dt_rel_4' in var_name:
-                    min_v, max_v = 0.54-0.1, 0.54+0.1            
+                    min_v, max_v = 0.58-0.1, 0.58+0.1            
                 if 'move_dt_rel_5' in var_name:
-                    min_v, max_v = 3.02-0.2, 3.02+0.2            
+                    min_v, max_v = 3.22-0.2, 3.22+0.2            
                 if 'move_dt_rel_6' in var_name:
-                    min_v, max_v = 1.20-0.2, 1.20+0.2                   
+                    min_v, max_v = 1.33-0.2, 1.33+0.2                   
                 if 'move_v_rel_3' in var_name:
-                    min_v, max_v = 0.41-0.2, 0.41+0.2           
+                    min_v, max_v = 0.29-0.2, 0.29+0.2           
                 if 'move_v_rel_5' in var_name:
-                    min_v, max_v = 0.38-0.2, 0.38+0.2   
+                    min_v, max_v = 0.45-0.2, 0.45+0.2   
                 
                 '''
                 transport_coil_geometry_Mloop
                 '''
                 if 'INNER_TRANS_N_TURNS' in var_name:
-                    min_v, max_v = 61.5, 62.5
+                    min_v, max_v = 62, 62.6
                 if 'MOT_N_TURNS' in var_name:
-                    min_v, max_v = 59, 60  
+                    min_v, max_v = 59.5, 60.5  
                 if 'MOT_coils_spacing_factor' in var_name:
-                    min_v, max_v = 1.1664588498686552-0.06, 1.1664588498686552+0.06  
+                    min_v, max_v = 1.13-0.06, 1.13+0.06  
                 if 'OUTER_TRANS_N_TURNS' in var_name:
                     min_v, max_v = 59.361997342349596-0.07, 59.361997342349596+0.07            
                 if 'SCIENCE_N_TURNS' in var_name:
-                    min_v, max_v = 55.49031733203944-0.5, 55.49031733203944+0.5 
+                    min_v, max_v = 55.9-0.5, 55.9+0.5 
                 if 'inner_coils_0_spacing_factor' in var_name:
-                    min_v, max_v = 1.0166875334333076-0.1, 1.0166875334333076+0.1  
+                    min_v, max_v = 0.92-0.1, 0.92+0.1  
                 if 'inner_coils_1_spacing_factor' in var_name:
-                    min_v, max_v = 0.9, 1.1            
+                    min_v, max_v = 1.05, 1.15            
                 if 'inner_coils_2_spacing_factor' in var_name:
-                    min_v, max_v = 0.9582473284775698-0.1, 0.9582473284775698+0.1           
+                    min_v, max_v = 1.01-0.1, 1.01+0.1           
                 if 'inner_coils_3_spacing_factor' in var_name:
-                    min_v, max_v = 0.9390285477731173-0.05, 0.9390285477731173+0.05                    
+                    min_v, max_v = 0.99-0.05, 0.99+0.05                    
                 if 'outer_coils_0_spacing_factor' in var_name:
-                    min_v, max_v = 1.0134866135121907-0.1, 1.0134866135121907+0.1
+                    min_v, max_v = 1.05-0.1, 1.05+0.1
                 if 'outer_coils_1_spacing_factor' in var_name:
-                    min_v, max_v = 0.9045343385932298-0.1, 0.9045343385932298+0.1  
+                    min_v, max_v = 0.94-0.1, 0.94+0.1  
                 if 'outer_coils_2_spacing_factor' in var_name:
-                    min_v, max_v = 1.1-0.1, 1.2   
+                    min_v, max_v = 1.14-0.1, 1.14+0.1   
                 if 'outer_coils_3_spacing_factor' in var_name:
-                    min_v, max_v = 0.8736665639691724-0.1, 0.8736665639691724+0.1           
+                    min_v, max_v = 0.94-0.1, 0.94+0.1           
                 if 'outer_coils_4_spacing_factor' in var_name:
-                    min_v, max_v = 0.9110499203999851-0.1, 0.9110499203999851+0.1
+                    min_v, max_v = 00.81-0.1, 0.81+0.1
                 if 'science_coils_spacing_factor' in var_name:
-                    min_v, max_v = 1.0293735229611503-0.1, 1.0293735229611503+0.1
+                    min_v, max_v = 0.98-0.1, 0.98+0.1
+                
+                '''
+                transport_trap_characteristics_Mloop
+                '''
+                if 'd2beta_final_dy2_0' in var_name:
+                    min_v, max_v = 1338-50, 1338+50
+                if 'd2beta_final_dy2_1' in var_name:
+                    min_v, max_v = 1531, 1551 
+                if 'd2beta_initial_dy2_0' in var_name:
+                    min_v, max_v = 995-15, 995+15    
+                if 'd2beta_initial_dy2_1' in var_name:
+                    min_v, max_v = 730, 770  
+                if 'final_switch_y_frac' in var_name:
+                    min_v, max_v = 0.57-0.05, 0.57+0.05
+                if 'initial_switch_y_frac' in var_name:
+                    min_v, max_v = 0.43-0.05, 0.43+0.05
+                if 'move_final_current' in var_name:
+                    min_v, max_v = 41, 45
+                if 'move_grad_0' in var_name:
+                    min_v, max_v = 1.46-0.3, 1.46+0.3  
+                if 'move_grad_1' in var_name:
+                    min_v, max_v = 2.06-0.3, 2.06+0.3 
+                if 'move_grad_2' in var_name:
+                    min_v, max_v = 3, 3.5            
+                if 'move_grad_3' in var_name:
+                    min_v, max_v = 1.7-0.3, 1.7+0.3            
+                if 'move_grad_4' in var_name:
+                    min_v, max_v = 2.0-0.3, 2.0+0.3            
+                if 'move_grad_5' in var_name:
+                    min_v, max_v = 1.48-0.3, 1.48+0.3
+                if 'move_grad_6' in var_name:
+                    min_v, max_v = 2.31-0.3, 2.31+0.3 
+                if 'move_grad_7' in var_name:
+                    min_v, max_v = 2.09-0.3, 2.09+0.3  
+                if 'move_grad_8' in var_name:
+                    min_v, max_v = 0.72-0.3, 0.72+0.3                           
+                
+                '''
+                transport_unitconversions_Mloop
+                '''
+                if 'curr_ratio_ch1' in var_name:
+                    min_v, max_v = 0.82, 0.92            
+                if 'curr_ratio_ch2' in var_name:
+                    min_v, max_v = 0.93, 0.97            
+                if 'curr_ratio_ch3' in var_name:
+                    min_v, max_v = 0.94, 1.00           
+                if 'curr_ratio_ch4' in var_name:
+                    min_v, max_v = 0.95, 1.05
                 
                 '''
                 transport_shim_Mloop
                 '''
-                if 'transport_shim0_curr' in var_name:
-                    min_v, max_v = -2.5, 1           
-                if 'transport_shim0_end' in var_name:
-                    min_v, max_v = 0.56, 1
-                if 'transport_shim0_start' in var_name:
-                    min_v, max_v = 0.38, 0.55
+                if 1:
+                    if 'transport_MOT_B_bias_ramp_duration' in var_name:
+                        min_v, max_v = 0.01, 0.5 
+                    if 'transport_MOT_B_bias_x' in var_name:
+                        min_v, max_v = -1, 6           
+                    if 'transport_MOT_B_bias_y' in var_name:
+                        min_v, max_v = -1, 6
+                    if 'transport_MOT_B_bias_z' in var_name:
+                        min_v, max_v = -4, 2
+                else:
+                    if 'transport_shim_current' in var_name:
+                        min_v, max_v = -2, 2
+                    if 'transport_shim_start' in var_name:
+                        min_v, max_v = 0.45, 0.7
                 
                 try:
                     min_v

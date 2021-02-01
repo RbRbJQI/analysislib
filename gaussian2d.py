@@ -28,7 +28,7 @@ def guessparam(data,ct):
         width = [np.sqrt(abs(np.nansum(((np.arange(data[:, int(c)].size)-c)**2*data[:, int(c)]))/np.nansum(data[:, int(c)]))) for c in center]
     height = np.nanmax(data)
     for wi in range(2):
-        if np.isnan(width[wi]):
+        if np.isnan(width[wi]) or width[wi]>len(data[:,wi]):
             width[wi] = width[abs(1-wi)]
     return center[0], center[1], width[0], width[1], height, 0
 
