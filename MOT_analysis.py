@@ -42,6 +42,10 @@ plt.legend()
 t, MOT_fluorecence = run.get_trace('Repump_monitor')
 plt.plot((t)*1e3, MOT_fluorecence*500, label='Repump_monitor')
 plt.legend()
+t_roi_start, t_roi_end = int(np.round(0.6/(t[1]-t[0]))), int(np.round(1.8/(t[1]-t[0])))
+Repump_avg = np.average(MOT_fluorecence[t_roi_start:t_roi_end])*500
+run.save_result('MOT_repump_fluo', Repump_avg)
+ 
 
 t, MOT_fluorecence = run.get_trace('Cooling_monitor')
 plt.plot((t)*1e3, MOT_fluorecence*50, label='Cooling_monitor')

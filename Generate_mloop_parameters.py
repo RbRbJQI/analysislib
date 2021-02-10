@@ -15,7 +15,7 @@ MHz = 1e6
 us = 1e-6
 ms = 1e-3
 
-optimize_group = ['quad_trap_Mloop','transport_shim_Mloop']
+optimize_group = ['quad_trap_Mloop']
 
 '''
 Don't use var to set min_v and max_v!

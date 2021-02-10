@@ -14,7 +14,7 @@ from matplotlib.widgets import TextBox
 import h5py
 
 #      horizontal, vertical
-roi_center = (144,339)#144,243
+roi_center = (153,272)#144,243
 roi_radius = 145
 target_center = (265,246)
 Do_dynamic_ROI = 0
